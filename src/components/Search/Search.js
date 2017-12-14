@@ -37,9 +37,9 @@ const InnerWrapper = styled.article`
 `
 
 const CloseLink = styled(Link)`
-  position: fixed;
+  position: absolute;
   top: 0.5rem;
-  right: 33.2rem;
+  left: -2rem;
   font-size: 1.4rem;
   text-decoration: none;
   color: white;
@@ -98,7 +98,15 @@ class Search extends Component {
 
   render() {
     const { input } = this.state
-    const { books, shelves, results, homePath, onUpdateShelf } = this.props
+    const {
+      books,
+      bookRatings,
+      shelves,
+      results,
+      homePath,
+      onUpdateShelf,
+      onUpdateRating
+    } = this.props
 
     return (
       <Wrapper>
@@ -118,8 +126,10 @@ class Search extends Component {
             {results.length ? (
               <BooksList
                 books={results.map(id => books[id])}
+                bookRatings={bookRatings}
                 shelves={shelves}
                 onUpdateShelf={onUpdateShelf}
+                onUpdateRating={onUpdateRating}
               />
             ) : input.length ? (
               <SearchTip>

@@ -1,5 +1,7 @@
 // react
 import React from "react"
+// components
+import ReactStars from "react-stars"
 // styles
 import styled from "styled-components"
 
@@ -10,7 +12,7 @@ const WrapperBook = styled.article`
   align-items: center;
   padding: 1rem;
   & + & {
-    border-top: 1px solid #dadada;
+    border-top: 1px solid #eaeaea;
   }
 `
 
@@ -28,19 +30,19 @@ const WrapperDescription = styled.div`
 
 const DescriptionDate = styled.time`
   font-size: 0.75rem;
-  color: #999;
+  color: #aaa;
 `
 
 const DescriptionTitle = styled.h1`
   font-size: 1.2rem;
   line-height: 1.4rem;
-  color: #444;
+  color: #333;
 `
 
 const DescriptionAuthors = styled.h2`
   font-size: 0.8rem;
   font-weight: normal;
-  color: #999;
+  color: #aaa;
 `
 
 const WrapperControls = styled.div`
@@ -57,7 +59,7 @@ const Cover = styled.div`
   background-color: #222;
   background-image: ${props => (props.url ? `url(${props.url})` : "none")};
   background-size: cover;
-  box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.3);
   border-radius: 0.1rem;
   font-weight: 700;
   color: white;
@@ -87,7 +89,13 @@ const ControlButton = styled.button`
   }
 `
 
-const BooksList = ({ books, shelves, onUpdateShelf }) => (
+const BooksList = ({
+  books,
+  bookRatings,
+  shelves,
+  onUpdateShelf,
+  onUpdateRating
+}) => (
   <Wrapper>
     {books.map(book => (
       <WrapperBook key={book.id}>
@@ -98,6 +106,14 @@ const BooksList = ({ books, shelves, onUpdateShelf }) => (
           <DescriptionDate>{book.date.getFullYear()}</DescriptionDate>
           <DescriptionTitle>{book.title}</DescriptionTitle>
           <DescriptionAuthors>{book.authors}</DescriptionAuthors>
+          <ReactStars
+            size={16}
+            count={5}
+            color1="#aaa"
+            half={false}
+            value={bookRatings[book.id] || 0}
+            onChange={score => onUpdateRating && onUpdateRating(book.id, score)}
+          />
         </WrapperDescription>
         <WrapperControls>
           {shelves.map(({ id, title }) => (

@@ -1,8 +1,15 @@
 import React from "react"
-import { Link } from "react-router-dom"
 import BookShelf from "../BookShelf/BookShelf"
 
-const Home = ({ books, booksByShelf, shelves, searchPath, onUpdateShelf }) => {
+const Home = ({
+  books,
+  bookRatings,
+  booksByShelf,
+  shelves,
+  searchPath,
+  onUpdateShelf,
+  onUpdateRating
+}) => {
   return (
     <div>
       {shelves.map(shelf => {
@@ -14,8 +21,10 @@ const Home = ({ books, booksByShelf, shelves, searchPath, onUpdateShelf }) => {
             key={shelf.id}
             title={shelf.title}
             books={shelfBooks}
+            bookRatings={bookRatings}
             shelves={shelves}
             onUpdateShelf={onUpdateShelf}
+            onUpdateRating={onUpdateRating}
           />
         )
       })}

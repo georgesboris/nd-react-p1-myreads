@@ -16,7 +16,7 @@ import Search from "../Search/Search"
 import NavButton from "../NavButton/NavButton"
 import MainLayout from "../MainLayout/MainLayout"
 import { BrowserRouter } from "react-router-dom"
-import { Switch, Route } from "react-router"
+import { Route } from "react-router"
 // utils
 import * as BooksAPI from "../../services/BooksAPI"
 import debounce from "lodash/debounce"
@@ -24,6 +24,8 @@ import set from "lodash/fp/set"
 
 const PATH_HOME = "/"
 const PATH_SEARCH = "/search"
+
+const LOCALSTORAGE_KEY = "@MyReads/ratings"
 
 const shelves = [
   { id: "currentlyReading", title: "Currently Reading" },
@@ -38,6 +40,7 @@ class App extends Component {
 
   state = {
     books: {},
+    bookRatings: {},
     booksByShelf: {},
     results: []
   }
@@ -57,6 +60,15 @@ class App extends Component {
 
       this.setState({ books, booksByShelf })
     })
+  }
+
+  fetchUserBookRatings = () => {
+    const ratings = window.localStorage.getItem(LOCALSTORAGE_KEY)
+    if (!ratings) {
+      window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify({}))
+    } else {
+      this.setState({ bookRatings: JSON.parse(ratings) })
+    }
   }
 
   /**
@@ -108,6 +120,23 @@ class App extends Component {
       })
   }
 
+  updateBookRating = (id, rating) => {
+    this.setState(state => ({
+      bookRatings: {
+        ...state.bookRatings,
+        [id]: rating
+      }
+    }))
+
+    window.localStorage.setItem(
+      LOCALSTORAGE_KEY,
+      JSON.stringify({
+        ...this.state.bookRatings,
+        [id]: rating
+      })
+    )
+  }
+
   /**
    * When searching, books retrieved do not contain the shelf property.
    * We check the current state to not overwrite any of the user's books.
@@ -151,6 +180,7 @@ class App extends Component {
 
   componentDidMount() {
     this.fetchUserBooks()
+    this.fetchUserBookRatings()
   }
 
   /**
@@ -158,7 +188,7 @@ class App extends Component {
    */
 
   render() {
-    const { books, booksByShelf, results } = this.state
+    const { books, bookRatings, booksByShelf, results } = this.state
     return (
       <BrowserRouter>
         <MainLayout>
@@ -166,10 +196,12 @@ class App extends Component {
 
           <Home
             books={books}
+            bookRatings={bookRatings}
             booksByShelf={booksByShelf}
             shelves={shelves}
             searchPath={PATH_SEARCH}
             onUpdateShelf={this.updateBookShelf}
+            onUpdateRating={this.updateBookRating}
           />
 
           <Route
@@ -178,11 +210,13 @@ class App extends Component {
             render={() => (
               <Search
                 books={books}
+                bookRatings={bookRatings}
                 shelves={shelves}
                 results={results}
                 homePath={PATH_HOME}
                 onSearchBooks={this.searchBooks}
                 onUpdateShelf={this.updateBookShelf}
+                onUpdateRating={this.updateBookRating}
                 onUnmount={this.clearSearchResults}
               />
             )}
